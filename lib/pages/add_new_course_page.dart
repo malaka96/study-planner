@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:study_planner/Models/course.dart';
 import 'package:study_planner/pages/widgets/custom_button.dart';
 import 'package:study_planner/pages/widgets/user_input.dart';
+import 'package:study_planner/services/course_service.dart';
+import 'package:study_planner/utils/util_fuctions.dart';
 
 class AddNewCoursePage extends StatelessWidget {
   AddNewCoursePage({super.key});
@@ -19,7 +23,30 @@ class AddNewCoursePage extends StatelessWidget {
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
-      print(_courseDescriptionController.text);
+
+      try {
+        final Course course = Course(
+          id: "",
+          name: _courseNameController.text,
+          description: _courseDescriptionController.text,
+          duration: _courseDurationController.text,
+          schedule: _courseScheduleController.text,
+          instructor: _courseInstructorController.text,
+        );
+
+        await CourseService().addCourse(course);
+        if (context.mounted) {
+          showSnackBars(context: context, text: 'Course added successfully');
+
+          await Future.delayed(Duration(seconds: 1));
+
+          GoRouter.of(context).go("/");
+        }
+      } catch (error) {
+        if (context.mounted) {
+          showSnackBars(context: context, text: 'Failed add course');
+        }
+      }
     }
   }
 
@@ -97,7 +124,10 @@ class AddNewCoursePage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                CustomButton(text: 'Add Course', onPressed: () =>_submitForm(context)),
+                CustomButton(
+                  text: 'Add Course',
+                  onPressed: () => _submitForm(context),
+                ),
               ],
             ),
           ),
