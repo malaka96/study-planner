@@ -109,7 +109,9 @@ class MainPage extends StatelessWidget {
                             color: lightGreen,
                             margin: const EdgeInsets.symmetric(vertical: 8),
                             child: Padding(
-                              padding: const EdgeInsets.symmetric(vertical: 8.0),
+                              padding: const EdgeInsets.symmetric(
+                                vertical: 8.0,
+                              ),
                               child: ListTile(
                                 title: Text(
                                   course.name,
@@ -125,6 +127,11 @@ class MainPage extends StatelessWidget {
                                     fontSize: 12,
                                   ),
                                 ),
+                                onTap: () {
+                                  GoRouter.of(
+                                    context,
+                                  ).push("/single-course", extra: course);
+                                },
                               ),
                             ),
                           );
