@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
+import 'package:study_planner/Models/assignment.dart';
 import 'package:study_planner/Models/course.dart';
 import 'package:study_planner/pages/widgets/custom_button.dart';
 import 'package:study_planner/pages/widgets/user_input.dart';
+import 'package:study_planner/services/assignment_service.dart';
+import 'package:study_planner/utils/util_fuctions.dart';
 
 class AddNewNotePage extends StatelessWidget {
   final Course course;
@@ -55,7 +59,25 @@ class AddNewNotePage extends StatelessWidget {
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
-      print(_selectedDate.value);
+      try {
+        Assignment assignment = Assignment(
+          id: "",
+          name: _assignmentNameController.text,
+          description: _assignmentDescriptionController.text,
+          duration: _assignmentDurationController.text,
+          dueDate: _selectedDate.value,
+          dueTime: _selectedTime.value,
+        );
+
+        AssignmentService().createAssignment(course.id, assignment);
+        showSnackBars(context: context, text: "Assingment added successfully");
+        await Future.delayed(Duration(seconds: 2));
+
+        GoRouter.of(context).go("/");
+      } catch (error) {
+        showSnackBars(context: context, text: "Failed to add assignment");
+        print(error);
+      }
     }
   }
 
@@ -156,7 +178,10 @@ class AddNewNotePage extends StatelessWidget {
                   },
                 ),
                 const SizedBox(height: 20),
-                CustomButton(text: 'Add Assignment', onPressed: () => _submitForm(context)),
+                CustomButton(
+                  text: 'Add Assignment',
+                  onPressed: () => _submitForm(context),
+                ),
               ],
             ),
           ),

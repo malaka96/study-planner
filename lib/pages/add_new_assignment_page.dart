@@ -1,10 +1,14 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:go_router/go_router.dart';
 import 'package:study_planner/Models/course.dart';
+import 'package:study_planner/Models/note.dart';
 import 'package:study_planner/pages/widgets/custom_button.dart';
 import 'package:study_planner/pages/widgets/user_input.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:study_planner/services/note_service.dart';
+import 'package:study_planner/utils/util_fuctions.dart';
 
 class AddNewAssignmentPage extends StatefulWidget {
   final Course course;
@@ -42,7 +46,23 @@ class _AddNewAssignmentPageState extends State<AddNewAssignmentPage> {
   void _submitForm(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
       _formKey.currentState?.save();
-      print(_selectedImage!.path);
+      try {
+        Note note = Note(
+          id: "",
+          title: _titleController.text,
+          description: _descriptionController.text,
+          section: _sectionController.text,
+          reference: _referenceController.text,
+        );
+
+        NoteService().createNote(widget.course.id, note);
+        showSnackBars(context: context, text: 'successfully added note');
+        await Future.delayed(Duration(seconds: 2));
+
+        GoRouter.of(context).go("/");
+      } catch (error) {
+        showSnackBars(context: context, text: 'failed adding note');
+      }
     }
   }
 
@@ -119,8 +139,11 @@ class _AddNewAssignmentPageState extends State<AddNewAssignmentPage> {
                       style: TextStyle(color: Colors.grey, fontSize: 14),
                     ),
                     const SizedBox(height: 20),
-                    CustomButton(text: 'Upload Note Image', onPressed: _pickImage),
-                    const SizedBox(height: 20,),
+                    CustomButton(
+                      text: 'Upload Note Image',
+                      onPressed: _pickImage,
+                    ),
+                    const SizedBox(height: 20),
                     _selectedImage != null
                         ? Column(
                             children: [
@@ -147,7 +170,10 @@ class _AddNewAssignmentPageState extends State<AddNewAssignmentPage> {
                             style: TextStyle(fontSize: 16, color: Colors.grey),
                           ),
                     const SizedBox(height: 20),
-                    CustomButton(text: 'Submit Note', onPressed: () => _submitForm(context)),
+                    CustomButton(
+                      text: 'Submit Note',
+                      onPressed: () => _submitForm(context),
+                    ),
                   ],
                 ),
               ),
