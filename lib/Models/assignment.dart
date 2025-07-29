@@ -18,16 +18,20 @@ class Assignment {
     required this.dueTime,
   });
 
-  factory Assignment.fromJson(Map<String, dynamic> data) {
-    return Assignment(
-      id: data['id'],
-      name: data['name'],
-      description: data['description'],
-      duration: data['duration'],
-      dueDate: (data['dueDate,'] as Timestamp).toDate(),
-      dueTime: TimeOfDay.fromDateTime((data['dueTime'] as Timestamp).toDate()),
-    );
-  }
+factory Assignment.fromJson(Map<String, dynamic> data) {
+  final Timestamp defaultTimestamp = Timestamp.fromDate(DateTime.now());
+
+  return Assignment(
+    id: data['id'] ?? '',
+    name: data['name'] ?? '',
+    description: data['description'] ?? '',
+    duration: data['duration'] ?? '',
+    dueDate: (data['dueDate'] ?? defaultTimestamp).toDate(),
+    dueTime: TimeOfDay.fromDateTime(
+      (data['dueTime'] ?? defaultTimestamp).toDate(),
+    ),
+  );
+}
 
    Map<String, dynamic> toJson() {
     return {

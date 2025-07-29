@@ -29,4 +29,23 @@ class CourseService {
     }
   }
 
+  Future<List<Course>> getCourses() async {
+    try {
+      final QuerySnapshot snapshot = await courseCollection.get();
+      return snapshot.docs.map((doc) {
+        return Course.fromJson(doc.data() as Map<String, dynamic>);
+      }).toList();
+    } catch (error) {
+      print('Error fetching courses: $error');
+      return [];
+    }
+  }
+
+  Future<void> deleteCourse(String id) async {
+    try {
+      await courseCollection.doc(id).delete();
+    } catch (error) {
+      print('Error deleting course $error');
+    }
+  }
 }

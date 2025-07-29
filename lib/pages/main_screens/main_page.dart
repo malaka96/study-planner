@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
 import 'package:study_planner/constants/constant.dart';
 import 'package:study_planner/services/course_service.dart';
+import 'package:study_planner/utils/util_fuctions.dart';
 
 class MainPage extends StatelessWidget {
   const MainPage({super.key});
@@ -104,34 +105,47 @@ class MainPage extends StatelessWidget {
                         itemBuilder: (context, index) {
                           final course = courses[index];
 
-                          return Card(
-                            elevation: 0,
-                            color: lightGreen,
-                            margin: const EdgeInsets.symmetric(vertical: 8),
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                vertical: 8.0,
-                              ),
-                              child: ListTile(
-                                title: Text(
-                                  course.name,
-                                  style: const TextStyle(
-                                    color: Colors.black,
-                                    fontSize: 15,
-                                  ),
-                                ),
-                                subtitle: Text(
-                                  course.description,
-                                  style: const TextStyle(
-                                    color: Colors.black87,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                                onTap: () {
-                                  GoRouter.of(
-                                    context,
-                                  ).push("/single-course", extra: course);
+                          return GestureDetector(
+                            onLongPress: () {
+                              showDialogBox(
+                                context: context,
+                                title: 'Delete Course',
+                                text: 'Are you sure?',
+                                buttonText: 'Delete',
+                                onConfirm: () async {
+                                  await CourseService().deleteCourse(course.id);
                                 },
+                              );
+                            },
+                            child: Card(
+                              elevation: 0,
+                              color: lightGreen,
+                              margin: const EdgeInsets.symmetric(vertical: 8),
+                              child: Padding(
+                                padding: const EdgeInsets.symmetric(
+                                  vertical: 8.0,
+                                ),
+                                child: ListTile(
+                                  title: Text(
+                                    course.name,
+                                    style: const TextStyle(
+                                      color: Colors.black,
+                                      fontSize: 15,
+                                    ),
+                                  ),
+                                  subtitle: Text(
+                                    course.description,
+                                    style: const TextStyle(
+                                      color: Colors.black87,
+                                      fontSize: 12,
+                                    ),
+                                  ),
+                                  onTap: () {
+                                    GoRouter.of(
+                                      context,
+                                    ).push("/single-course", extra: course);
+                                  },
+                                ),
                               ),
                             ),
                           );
