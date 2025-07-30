@@ -14,7 +14,16 @@ class NotificationPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(),
+      appBar: AppBar(
+        title: const Text(
+          'Notifications',
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
       body: FutureBuilder(
         future: _fetchNotifications(),
         builder: (context, snapshot) {
@@ -23,7 +32,7 @@ class NotificationPage extends StatelessWidget {
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return const Center(child: Text('No assignments available.'));
+            return const Center(child: Text('No Notifications available.'));
           }
           final notifications = snapshot.data!;
 

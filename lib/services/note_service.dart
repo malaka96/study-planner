@@ -23,8 +23,9 @@ class NoteService {
 
   Stream<List<Note>> getNotes(String courseId) {
     try {
-      final CollectionReference notesCollection =
-          courseCollection.doc(courseId).collection('note');
+      final CollectionReference notesCollection = courseCollection
+          .doc(courseId)
+          .collection('note');
       return notesCollection.snapshots().map((snapshot) {
         return snapshot.docs
             .map((doc) => Note.fromJson(doc.data() as Map<String, dynamic>))
@@ -51,6 +52,32 @@ class NoteService {
     } catch (error) {
       print(error);
       return {};
+    }
+  }
+
+  Future<void> deleteNote(String courseId, String id) async {
+    try {
+      final CollectionReference notesCollection = courseCollection
+          .doc(courseId)
+          .collection('note');
+
+      await notesCollection.doc(id).delete();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> deleteNoteReference(String courseId) async {
+    try {
+      final CollectionReference notesCollection = courseCollection
+          .doc(courseId)
+          .collection('note');
+      final QuerySnapshot snapshot = await notesCollection.get();
+      for (final doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }

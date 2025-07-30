@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:study_planner/Models/assignment.dart';
+import 'package:study_planner/services/notification_service.dart';
 
 class AssignmentService {
   final CollectionReference courseCollection = FirebaseFirestore.instance
@@ -31,7 +32,9 @@ class AssignmentService {
 
       return assignmentCollection.snapshots().map((snapshot) {
         return snapshot.docs
-            .map((doc) => Assignment.fromJson(doc.data() as Map<String, dynamic>))
+            .map(
+              (doc) => Assignment.fromJson(doc.data() as Map<String, dynamic>),
+            )
             .toList();
       });
     } catch (error) {
@@ -58,6 +61,32 @@ class AssignmentService {
     } catch (error) {
       print(error);
       return {};
+    }
+  }
+
+  Future<void> deleteAssignment(String courseId, String id) async {
+    try {
+      final CollectionReference assignmentCollection = courseCollection
+          .doc(courseId)
+          .collection('assignments');
+      await assignmentCollection.doc(id).delete();
+    } catch (error) {
+      print(error);
+    }
+  }
+
+  Future<void> deleteAssigmentReference(String courseId) async {
+    try {
+      final CollectionReference assignmentCollection = courseCollection
+          .doc(courseId)
+          .collection('assignments');
+      final QuerySnapshot snapshot = await assignmentCollection.get();
+      for (final doc in snapshot.docs) {
+        NotificationService().deleteNotification(doc.id);
+        await doc.reference.delete();
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }

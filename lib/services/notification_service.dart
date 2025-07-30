@@ -41,16 +41,32 @@ class NotificationService {
     }
   }
 
-   Future<List<NotificationModel>> getNotifications() async {
+  Future<List<NotificationModel>> getNotifications() async {
     try {
       final QuerySnapshot snapshot = await notificationCollection.get();
       return snapshot.docs
-          .map((doc) =>
-              NotificationModel.fromJson(doc.data() as Map<String, dynamic>))
+          .map(
+            (doc) =>
+                NotificationModel.fromJson(doc.data() as Map<String, dynamic>),
+          )
           .toList();
     } catch (error) {
       print(error);
       return [];
+    }
+  }
+
+  Future<void> deleteNotification(String assigmentId) async {
+    try {
+      final QuerySnapshot snapshot = await notificationCollection
+          .where('assignmentId', isEqualTo: assigmentId)
+          .get();
+
+      for (final doc in snapshot.docs) {
+        await doc.reference.delete();
+      }
+    } catch (error) {
+      print(error);
     }
   }
 }

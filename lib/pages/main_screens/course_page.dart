@@ -8,6 +8,7 @@ import 'package:study_planner/constants/constant.dart';
 import 'package:study_planner/services/assignment_service.dart';
 import 'package:study_planner/services/course_service.dart';
 import 'package:study_planner/services/note_service.dart';
+import 'package:study_planner/utils/util_fuctions.dart';
 
 class CoursePage extends StatelessWidget {
   const CoursePage({super.key});
@@ -115,19 +116,38 @@ class CoursePage extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: courseAssignments.map((assignment) {
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black12,
-                                  borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            child: ListTile(
-                               title: Text(assignment.name,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                          return GestureDetector(
+                            onLongPress: () {
+                              showDialogBox(
+                                context: context,
+                                title: 'Delete Assigment',
+                                text: 'Are you sure?',
+                                buttonText: 'Delete',
+                                onConfirm: () async {
+                                  await AssignmentService().deleteAssignment(course.id, assignment.id);
+                                },
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  assignment.name,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 subtitle: Text(
-                                    'Due Date: ${DateFormat.yMMMd().format(assignment.dueDate)}'),
-                                onTap: () => GoRouter.of(context).push("/single-assignment",extra: assignment),
+                                  'Due Date: ${DateFormat.yMMMd().format(assignment.dueDate)}',
+                                ),
+                                onTap: () => GoRouter.of(
+                                  context,
+                                ).push("/single-assignment", extra: assignment),
+                              ),
                             ),
                           );
                         }).toList(),
@@ -145,18 +165,36 @@ class CoursePage extends StatelessWidget {
                       Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: courseNotes.map((note) {
-                          return Container(
-                            margin: EdgeInsets.only(bottom: 5),
-                            decoration: BoxDecoration(
-                              color: Colors.black12,
-                                  borderRadius: BorderRadius.circular(5.0),
-                            ),
-                            child: ListTile(
-                               title: Text(note.title,
-                                    style: const TextStyle(
-                                        fontWeight: FontWeight.bold)),
+                          return GestureDetector(
+                             onLongPress: () {
+                              showDialogBox(
+                                context: context,
+                                title: 'Delete Note',
+                                text: 'Are you sure?',
+                                buttonText: 'Delete',
+                                onConfirm: () async {
+                                  await NoteService().deleteNote(course.id, note.id);
+                                },
+                              );
+                            },
+                            child: Container(
+                              margin: EdgeInsets.only(bottom: 5),
+                              decoration: BoxDecoration(
+                                color: Colors.black12,
+                                borderRadius: BorderRadius.circular(5.0),
+                              ),
+                              child: ListTile(
+                                title: Text(
+                                  note.title,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
                                 subtitle: Text('Section: ${note.section}'),
-                                onTap: () => GoRouter.of(context).push("/single-note",extra: note),
+                                onTap: () => GoRouter.of(
+                                  context,
+                                ).push("/single-note", extra: note),
+                              ),
                             ),
                           );
                         }).toList(),

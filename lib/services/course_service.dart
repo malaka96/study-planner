@@ -1,5 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:study_planner/Models/course.dart';
+import 'package:study_planner/pages/main_screens/assignment_page.dart';
+import 'package:study_planner/services/assignment_service.dart';
+import 'package:study_planner/services/note_service.dart';
 
 class CourseService {
   final CollectionReference courseCollection = FirebaseFirestore.instance
@@ -43,6 +46,8 @@ class CourseService {
 
   Future<void> deleteCourse(String id) async {
     try {
+      AssignmentService().deleteAssigmentReference(id);
+      NoteService().deleteNoteReference(id);
       await courseCollection.doc(id).delete();
     } catch (error) {
       print('Error deleting course $error');
